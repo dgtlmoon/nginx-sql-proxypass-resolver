@@ -15,8 +15,15 @@ services:
     build: sqlite-dns-resolver
     hostname: sqlite-dns-resolver
     environment:
-      SQL_QUERY: SELECT dest_addr FROM lookup WHERE name is NOT NULL AND name LIKE ?
-      SQLITE_DB: /data.db
+      # SQLite (default) — note the async driver prefix:
+      DATABASE_URL: sqlite+aiosqlite:////data.db
+      SQL_QUERY: "SELECT dest_addr FROM lookup WHERE name IS NOT NULL AND name LIKE :name"
+      DNS_TTL: "60"
+      CACHE_SIZE: "512"
+      # MySQL example:
+      # DATABASE_URL: mysql+asyncmy://user:pass@mysql-host/dbname
+      # PostgreSQL example:
+      # DATABASE_URL: postgresql+asyncpg://user:pass@pg-host/dbname
     volumes:
       - ./sqlite-dns-resolver:/app
       - ./example/test-data.db:/data.db

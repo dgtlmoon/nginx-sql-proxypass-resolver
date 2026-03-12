@@ -14,8 +14,37 @@ Then
 - http://127.0.0.1/google Lookup "google" in the SQLite then resolve to an IP that hopefully still works and proxy_pass you there
 - http://127.0.0.1/test-container Fallback example, key doesnt exist so we fallback to using the existing defined docker hosts/containers
 
+### Configuration
+
+All settings are environment variables:
+
+| Variable | Default | Description |
+|---|---|---|
+| `DATABASE_URL` | `sqlite:////data.db` | SQLAlchemy connection URL. Supports SQLite, MySQL, PostgreSQL. |
+| `SQL_QUERY` | `SELECT dest_addr FROM lookup WHERE name IS NOT NULL AND name LIKE :name` | Query to resolve a name. Must use `:name` as the named parameter. |
+| `DNS_TTL` | `60` | TTL (seconds) for DNS responses and cache entries. |
+| `CACHE_SIZE` | `512` | Max number of cached entries (LRU eviction). |
+| `UPSTREAM_DNS` | `127.0.0.11` | Fallback DNS server for names not found in the DB (Docker embedded DNS). |
+| `UPSTREAM_PORT` | `53` | Port for the upstream DNS server. |
+| `LOOKUP_TIMEOUT` | `3.0` | Timeout in seconds for upstream DNS queries. |
+#### Backend examples
+
+```
+# SQLite (default)
+DATABASE_URL=sqlite+aiosqlite:////data.db
+
+# MySQL
+DATABASE_URL=mysql+asyncmy://user:pass@mysql-host/dbname
+
+# PostgreSQL
+DATABASE_URL=postgresql+asyncpg://user:pass@pg-host/dbname
+```
+
+Install the matching async driver via `requirements.txt` (see comments in that file).
+
 ### See
 - http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver
+- https://docs.sqlalchemy.org/en/20/core/engines.html#database-urls
 
 ### Note
 

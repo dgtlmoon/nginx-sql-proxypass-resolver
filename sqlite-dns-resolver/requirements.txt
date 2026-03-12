@@ -1,1 +1,8 @@
-dnslib
+dnslib>=0.9.26
+sqlalchemy[asyncio]>=2.0
+dnspython>=2.8.0
+
+# Async DB drivers — uncomment the one(s) you need:
+aiosqlite          # SQLite:     DATABASE_URL=sqlite+aiosqlite:////data.db
+# asyncmy          # MySQL:      DATABASE_URL=mysql+asyncmy://user:pass@host/db
+# asyncpg          # PostgreSQL: DATABASE_URL=postgresql+asyncpg://user:pass@host/db
