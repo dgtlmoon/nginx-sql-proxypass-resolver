@@ -62,10 +62,10 @@ check() {
     got=$(dig @127.0.0.1 -p "$PORT" "$host" A +short +time=2 +tries=1 2>/dev/null || true)
     if [[ "$got" == "$expected" ]]; then
         echo "  [PASS] $label: $host -> $got"
-        ((PASS++))
+        ((++PASS))
     else
         echo "  [FAIL] $label: $host -> expected '$expected', got '$got'"
-        ((FAIL++))
+        ((++FAIL))
     fi
 }
 
@@ -75,10 +75,10 @@ check_nxdomain() {
     dig @127.0.0.1 -p "$PORT" "$host" A +time=2 +tries=1 2>/dev/null | grep -q "NXDOMAIN" && rc=0 || rc=1
     if [[ $rc -eq 0 ]]; then
         echo "  [PASS] $label: $host -> NXDOMAIN"
-        ((PASS++))
+        ((++PASS))
     else
         echo "  [FAIL] $label: $host expected NXDOMAIN"
-        ((FAIL++))
+        ((++FAIL))
     fi
 }
 
@@ -104,10 +104,10 @@ concurrent_fail=0
 for i in $(seq 1 50); do
     got=$(cat "$tmpdir/result-$i")
     if [[ "$got" == "1.2.3.4" ]]; then
-        ((concurrent_pass++))
+        ((++concurrent_pass))
     else
         echo "  [FAIL] concurrent query $i: got '$got'"
-        ((concurrent_fail++))
+        ((++concurrent_fail))
     fi
 done
 rm -rf "$tmpdir"
