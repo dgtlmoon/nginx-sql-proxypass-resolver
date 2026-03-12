@@ -161,7 +161,7 @@ class TestInputValidation:
         from dnslib import DNSRecord, QTYPE
         import socket
 
-        raw = bytes(DNSRecord.question("evil\x00host"))
+        raw = DNSRecord.question("evil\x00host").pack()
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.settimeout(3.0)
         try:
