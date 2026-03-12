@@ -335,7 +335,7 @@ async def main():
 
     udp_transport, _ = await loop.create_datagram_endpoint(
         lambda: UDPProtocol(resolver),
-        local_addr=(LISTEN_ADDRESS, LISTEN_PORT),
+        local_addr=(LISTEN_ADDRESS or "0.0.0.0", LISTEN_PORT),
     )
     log.info("UDP DNS listening on %s:%d", LISTEN_ADDRESS or "*", LISTEN_PORT)
 
