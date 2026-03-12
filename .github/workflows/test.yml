@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  push:
+    branches: ["master", "main"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sqlite-dns-resolver
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: sqlite-dns-resolver/requirements-test.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run unit + integration tests
+        run: pytest -v --tb=short
+
+      - name: Smoke test (shell script)
+        run: |
+          sudo apt-get install -y --no-install-recommends dnsutils > /dev/null 2>&1
+          bash test.sh 5353
