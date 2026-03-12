@@ -94,11 +94,14 @@ check_nxdomain "unknown host" "no-such-host-xyz"
 echo ""
 echo "=== 50 concurrent queries (same host) ==="
 tmpdir=$(mktemp -d)
+dig_pids=()
 for i in $(seq 1 50); do
     dig @127.0.0.1 -p "$PORT" test-host A +short +time=3 +tries=1 \
         > "$tmpdir/result-$i" 2>/dev/null &
+    dig_pids+=($!)
 done
-wait
+# Wait only for the dig processes, NOT the background server
+wait "${dig_pids[@]}"
 concurrent_pass=0
 concurrent_fail=0
 for i in $(seq 1 50); do
@@ -112,8 +115,9 @@ for i in $(seq 1 50); do
 done
 rm -rf "$tmpdir"
 echo "  $concurrent_pass/50 passed"
-((PASS += concurrent_pass))
-((FAIL += concurrent_fail))
+# Use $(( )) assignment to avoid set -e triggering when result is 0
+PASS=$(( PASS + concurrent_pass ))
+FAIL=$(( FAIL + concurrent_fail ))
 
 # ---- summary ----
 echo ""
